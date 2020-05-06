@@ -1,0 +1,112 @@
+\documentclass[10pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\selectlanguage{polish}
+\author{Jakub Skrajny, Maciej Wojtala}
+\title{Architektura I - "GdzieJestLek"}
+\begin{document}
+\maketitle
+\section{Elementy systemu oraz ich komunikacja}
+System składa się z trzech elementów.\\
+\begin{enumerate}
+\item przeglądarka(klient)
+\item serwer
+\item baza danych
+\end{enumerate}
+Przeglądarka oraz baza danych komunikują się jedynie z serwerem. Komunikacja zaczyna się po stronie klienta.
+Wysyłane jest żądanie do serwera. Serwer na podstawie żądania, serwer wysyłą do bazy danych zapytanie SQL.
+Następnie serwer otrzymuje odpowiedź i przekazuje ją do klienta.
+\section{Przeglądarka}
+W polu body znajdują się następujące elementy:\\
+\begin{itemize}
+\item up
+\item search
+\item sample
+\item buts
+\end{itemize}
+Element up pełni formę nagłówka.\\
+W elemencie search znajdują się:
+\begin{itemize}
+\item IN
+\item SBT
+\end{itemize}
+Definicje pól IN oraz SBT są opisane w dokumencie wymagań funkcjonalnych. \\
+Element sample jest równoważny elementowi OUT z wymagań funkcjonalnych.\\
+W elemencie buts znajdują się:
+\begin{itemize}
+\item L
+\item R
+\end{itemize}
+Definicja w dokumencie wymagań funkcjonalnych.\\
+\subsection{sample - OUT}
+Po odebraniu danych z serwera w postaci tablicy dwuwymiarowej, po stronie przeglądarki rozpoczyna się proces wyświetlenia wyniku.\\
+Wykonywane są następujące funkcje:
+\begin{itemize}
+\item setParams
+\item rowSpanTabPrepare
+\item HTMLTabElemsPrepare
+\item changeView
+\end{itemize}
+setParams - ustala zmienne globalne na odpowiednie wartości wyjściowe \\ \\
+rowSpanTabPrepare - tworzy tabele rowSpanTab, na podstawie której do komórek tabeli będzie przyporządkowana wartość rowspan(sposób łączenia komórek został opisany w wymaganiach funkcjonalnych) \\ \\
+HTMLTabElemsPrepare - tworzy tablicę tabel HTML(HTMLTabElems), każdy element tablicy jest elementem OBJ(definicja w wymaganiach funkcjonalnych), komórki tych tabel mają ustaloną wartość rowspan na podstawie rowSpanTabPrepare \\ \\
+changeView - wylicza jaką część z HTMLTabElems należy wyświetlić oraz wywołuje funkcje disButs oraz display.\\
+disButs - zażądza atrybutem disabled przycisków L oraz R,
+przycisk L / R ma ustawiony atrybut disabled wtedy i tylko wtedy, gdy nie ma już wyników mniejszych/większych leksykograficznie od aktualnie wyświetlonych wyników. \\ \\
+display - tworzy nową tabelę HTML z odpowiednich elementów HTMLTabElems oraz ją wyświetla \\
+Następnie klient może za pomocą L oraz R zmieniać zmieniać 
+wyświetlaną część wyniku. \\
+Wciśnięcie L lub R powoduje wywołanie funkcji changeView z odpowiednim parametrem wskazującym na to, który przycisk został wciśnięty.
+\section{Klient-serwer}
+Za pomocą przycisku SBT (opisanego w dokumencie pt.',,Analiza wymagań I- 'GdzieJestLek' '') klient wysyła żądanie do serwera.
+Serwer inicjuje wyszukiwanie w bazie danych odpowiednich rekordów, które są zależne od wyrazu wpisanego w pole IN.
+
+\subsection{Wysłanie żądanie}
+Wciśnięcie SBT powoduje wywołanie funkcji func().
+Funkcja func() sprawdza, czy dany wyraz jest poprawny(definicja z dokumentu jak wyżej). W sprawdznaniu pomaga funkcja check(), która sprawdza pojedynczy znak. Jeśli wyraz nie jest poprawny, to wyświetlany zostaje stosowny komunikat za pomocą funkcji error(). Jeśli wyraz jest poprawny, to wysyłane jest żądanie do serwera za pomocą funkcji jQuery.ajax(). Żądanie jest typu post, za wykonanie tego żądania odpowiada skrypt go.php, serwer otrzymuje jako daną zawartość IN. Jeśli serwer nie odbierze poprawnie danych, to zwróci znak procent.
+
+\subsection{Odpowiedź na żądanie}
+Jeśli żądanie zakończy się sukcesem, serwer zwraca odpowiedź jako napis. Jest to JSON opisujący dwuwymiarową tablicę. Ta tablica zawiera rekordy zwrócone przez bazę danych w wyniku wyszukiwania.
+Jeśli żądanie nie zakończy się sukcesem, zostanie wyświetlony stosowny komunikat za pomocą funkcji error().
+
+\section{Struktura bazy danych}
+Baza danych jest zrealizowana w systemie Oracle (Oracle Database).
+Baza zawiera jedną tabelę o nazwie ,,Leki''. Tabela ta zawiera następujące kolumny:,,Nazwa'', ,,Substancja\_czynna'',  ,,Postac'', ,,Dawka'', ,,Zawartosc\_opakowania'', ,,Kod\_EAN'', ,,Poziom\_odplatnosci'', ,,Zakres\_objetych\_refundacja'', ,,Wysokosc\_doplaty''.
+
+\subsection{Skrypt tworzący bazę}
+\$ create table Leki\\
+\$ (\\
+\$ \hspace{6mm} Nazwa varchar2(2000) not null,\\
+\$ \hspace{6mm} Substancja\_czynna varchar2(2000) not null,\\
+\$ \hspace{6mm} Postac  varchar2(2000) not null,\\
+\$ \hspace{6mm} Dawka  varchar2(2000) not null,\\
+\$ \hspace{6mm} Zawartosc\_opakowania  varchar2(2000) not null,\\
+\$ \hspace{6mm} Kod\_EAN varchar2(2000) not null,\\
+\$ \hspace{6mm} Poziom\_odplatnosci varchar2(2000) not null,\\
+\$ \hspace{6mm} Zakres\_objetych\_refundacja varchar2(2000) not null,\\
+\$ \hspace{6mm} Wysokosc\_doplaty numeric(19,4) not null\\
+\$ );\\
+
+
+
+\section{Serwer-baza}
+Po odebraniu danych od klienta, serwer łączy się z bazą danych za pomocą funkcji oci\_connect(). W przypdku błędu zwracany jest komunikat o błędzie.
+Następnie serwer konstruuje zapytanie(opisane w podrozdziale), parsuje go za pomocą ociparse() oraz wykonuje za pomocą oci\_execute().
+W przypadku błędu zwracany jest stosowny komunikat.
+Następnie do tablicy tab zapisywane są kolejne rekordy wyniku wyszukiwania(oci\_fetch\_array()). Na końcu przy pomocy funkcji json\_encode() zwracana jest tablica dwuwymiarowa tab.
+
+\subsection{Zapytanie}
+\$ select distinct Leki.Nazwa, Leki.Substancja\_czynna, ... \\
+\$ from Leki inner join ( \\
+\$ \hspace{6mm} select distinct Nazwa, Substancja\_czynna \\
+\$ \hspace{6mm} from Leki \\
+\$ \hspace{6mm} where Nazwa like '\%".\$str."\%' \\
+\$ \hspace{6mm} or Substancja\_czynna like '\%".\$str."\%' \\
+\$ \hspace{6mm} or ...) h \\
+\$ on Leki.Nazwa = h.Nazwa
+\$ and Leki.Substancja\_czynna = h.Substancja\_czynna \\
+\$ order by Leki.Nazwa, Leki.Substancja\_czynna, ...
+\end{document}

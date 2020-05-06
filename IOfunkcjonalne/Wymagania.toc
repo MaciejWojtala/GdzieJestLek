@@ -1,0 +1,14 @@
+\babel@toc {polish}{}
+\babel@toc {polish}{}
+\contentsline {section}{\numberline {1}Wprowadzenie}{1}
+\contentsline {section}{\numberline {2}S\IeC {\l }ownik}{1}
+\contentsline {section}{\numberline {3}Og\IeC {\'o}lny opis}{2}
+\contentsline {subsection}{\numberline {3.1}Co w I fazie}{2}
+\contentsline {subsection}{\numberline {3.2}Baza danych}{2}
+\contentsline {subsection}{\numberline {3.3}Interfejs}{2}
+\contentsline {subsection}{\numberline {3.4}Dzia\IeC {\l }anie aplikacji}{2}
+\contentsline {section}{\numberline {4}Wymagania Funkcjonalne}{3}
+\contentsline {subsection}{\numberline {4.1}Baza danych}{3}
+\contentsline {subsection}{\numberline {4.2}Wyszukiwanie}{3}
+\contentsline {subsection}{\numberline {4.3}Wy\IeC {\'s}wietlanie}{3}
+\contentsline {section}{\numberline {5}Wymagania niefunkcjonalne}{4}

@@ -1,0 +1,89 @@
+\documentclass[10pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\selectlanguage{polish}
+\author{Jakub Skrajny, Dawid Herman, Maciej Wojtala, Mateusz Błajda}
+\title{Analiza wymagań I- "GdzieJestLek"}
+\begin{document}
+\maketitle
+\section{Wprowadzenie}
+ Dokument ma na celu przedstawić wymagania dotyczące działania aplikacji tworzonej w ramach projektu "GdzieJestLek". Wymagania dotyczą I fazy tworzenia projektu.
+\section{Słownik}
+\begin{itemize}
+\item OBJKEY - para złożona z wartości typu 'Nazwa' i typu 'Substancja czynna'.
+\item OBJ - zbiór wierszy z bazy danych, których pola 'Nazwa' i 'Substancja czynna' tworzą identyczny OBJKEY.
+\item poprawne słowo - ciąg znaków, których dziesiętny kod ASCII należy do przedziału [32-122] oraz nie należy do żadnego z następujących przedziałów [33-39], [59], [63-64], [91-96].
+\end{itemize}
+Uwagi:\newline
+Słowa 'rekord' oraz 'wiersz' są używane zamiennie. \newline
+Niektóre definicje będą podawane na bieżąco.
+\section{Ogólny opis}
+\subsection{Co w I fazie}
+Celem pierwszej fazy projektu "GdzieJestLek" jest stworzenie aplikacji webowej. Aplikacja będzie umożliwiała wyszukiwanie tekstu w bazie danych oraz wyświetlała wynik wyszukiwania.
+\subsection{Baza danych}
+Baza danych zostanie stworzona na podstawie dokumentu pt.
+'załącznik do obwieszczenia' (później nazywany DOC). Obwieszczeniem, o którym mowa jest 'Obwieszczenie Ministra Zdrowia z dnia 18 lutego 2020 roku w sprawie wykazu refundowanych leków, środków spożywczych specjalnego przeznaczenia żywieniowego oraz wyrobów medycznych na 1 marca 2020 roku'. Wspomniany dokument zawiera informacje o lekach refundowaych, ich cenach, opakowaniach, substancjach czynnych, chorobach leczonych z ich pomocą itp..
+\subsection{Interfejs}
+Po włączeniu aplikacji, w przeglądarce pojawią się trzy elementy:\newline
+\begin{itemize}
+\item pole do wpisywania tekstu (nazywane później 'IN')
+\item pole do wyświetlania wyniku - (nazywane później 'OUT') 
+\item przycisk - (nazywane później 'SBT')
+\end{itemize}
+Jeżeli elementy, które powinny sie wyświetlić w OUT, nie będą się mieściły, to pod OUT pojawią się dwa nowe elementy. \newline
+\begin{itemize}
+\item przycisk ze strzałką w prawo (nazywany później R)
+\item przycisk ze strzałką w lewo (nazywany później L)
+\end{itemize}
+\subsection{Działanie aplikacji}
+Dwoma głównymi funkcjonalnościami, które zauważa użytkownik są wyszukiwanie oraz wyświetlanie. Po wciśnięciu SBT, zostanie podjęta próba wyszukania tekstu wpisanego do IN w bazie danych.
+Następnie po przetworzeniu danych, wynik zostanie wypisany do OUT. Jeżeli wynik wyszukiwania okaże się zbyt duży, to pojawią się R oraz L.
+Za pomocą nich będzie można zmienić zawartość OUT na dalsze/wcześniejsze części wyniku wyszukiwania.
+\section{Wymagania Funkcjonalne}
+\subsection{Baza danych}
+Baza danych będzie zawierała jedną tabelę (Leki) o następujących kolumnach: \newline
+\begin{itemize}
+\item Nazwa
+\item Substancja czynna
+\item Postać
+\item Dawka
+\item Zawartość opakowania
+\item Kod EAN lub inny kod odpowiadający kodowi EAN
+\item Poziom odpłatności
+\item Zakres wskazań objętych refundacją
+\item Wysokość dopłaty świadczeniobiorcy
+\end{itemize}
+Wartośći w komórkach będą odpowiadały informacjom zawartym w DOC.\newline
+W bazie danych nie będą występowały polskie znaki diakrytczne. Zamiast litery 'ą' należy używać 'a' itp. \newline
+Znaki ';', (procent) oraz (Mikro) zostaną zamienione odpowiednio na '.', 'p', 'u'.
+\subsection{Wyszukiwanie}
+Wyszukiwanie rozpoczyna się po wciśnięciu przycisku SBT.
+Aplikacja wyszukuje tekst będący zawartością IN (później nazywany TEXT) w momencie kliknięcia. \newline
+Aplikacja nie gwarantuje poprawnego wyszukania słowa innego niż 'poprawne słowo' (wyjaśnienie w słowniku).\newline
+Wynikiem wyszukiwania są wszystkie OBJ (wyjaśnienie w słowniku), które zawierają taką komórkę, że TEXT jest infiksem zawartości komórki.
+\subsection{Wyświetlanie}
+Po zakończeniu wyszukiwania, wynik wyświetli się w następujący sposób. \newline
+Rekordy znajdujące się w wyniku zostaną wyświetlane w postaci tabeli. Kolumny wyświetlonej tabeli będą identyczne jak te w bazie danych. Kolejność wyświetlanych wierszy będzie leksykograficznie rosnąca przy czym porządkować będziemy po kolejnych wartościach kolumn od lewej do prawej. \newline
+Wyniki wyszukiwania będą stronicowane, aby przyspieszyć czas przedstawiania ich w przeglądarce. W pol OUT zmieści się maksymalnie 8 wierszy. Na kolejnych stronach, które będzie można przeglądać przy pomocy przycisków L i R, pokazywane będą grupy wierszy maksymalnego mieszczącego się rozmiaru. Grupy wierszy OBJ są całością, tzn. każda taka grupa znajduje się na jednej stronie. Stąd wyjątek: jeżeli OBJ zajmuje więcej niż maksymalna wielkość OUT, to i tak jest wyświetlany na jednej stronie, ale nic poza nim.\newline 
+W ramach jednego OBJ będzie dokonane złączenie pewnych komórek w jedną. Efekt złączenia w aplikacji będzie taki sam jak efekt złączenia komórek w skutek następującego procesu:\newline
+1. Zaczynamy od kolumny nr 3,bo wartości w kolumnach 1 oraz 2 są takie same dla każdego rekordu w OBJ \newline
+2. W aktualnej kolumnie łączymy komórki o tych samych wartościach, jeśli komórki z kolumny o numerze niższym o 1 już zostały połączone. Powtarzamy ten krok dla kolejnych kolumn.
+\newline
+\section{Wymagania niefunkcjonalne}
+\subsection{Środowisko pracy aplikacji}
+Aplikacja może działać poprawnie w dowolnej przeglądarce internetowej. Zapewniamy jej całkowicie poprawne działanie w następujących przeglądarkach:
+\begin{itemize}
+\item Google Chrome od wersji 29.0
+\item Internet Explorer od wersji 11.0
+\item Mozilla Firefoz od wersji 28.0
+\item Safari od wersji 9.0
+\item Opera od wersji 17.0
+\end{itemize}
+\subsection{Ograniczenia prawne}
+Projekt nie zajmuje się kwestami prawnymi. W szczególności aplikacja w żaden sposób nie gwarantuje bezpieczeństwa wprowadzonych do niej danych medycznych.
+\subsection{Wydajność}
+Dołożone zostaną wszelkie starania, by szybkość reagowania aplikacji była zadowalająca dla każdego użytkownika. Nawet przy szesnastokrotnie większej bazie danych, zakładamy, że wyszukiwania i ładowania będą pomijalnie szybkie (czas trwania poniżej pół sekundy).
+\end{document}
