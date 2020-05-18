@@ -1,12 +1,44 @@
 <?php 
-    $str = (isset($_POST['str'])) ? $_POST['str'] : "%";
-    if($str == "%") {
-	echo "%";
+    session_start();
+
+/* 
+    Pliki sesji 
+    $_SESSION['str'] - szukany poprzednio wyraz
+    $_SESSION['tab']  - wynik ostatniego wyszukiwania
+*/
+
+/* 
+    Pliki w POST
+    $_POST['str']     - szukany wyraz
+    $_POST['start']   - indeks pierwszego wiersza 
+*/
+
+    if(!(isset($_POST['str']))) {
+	echo "Puste zapytanie";
 	return;
     }
+    $str = $_POST['str'];
 
-    $LOGIN = "***";
-    $PASS = "**";
+/* Dane do wysłania */
+    $mess->tab = [];  				// dane do wyświetlenia
+    $mess->start = intval($_POST['start']);		// indeks pierwszego wiersza
+    $mess->is_more = 0;   			// czy jest wiecej o wyzszym indeksie
+  
+    if(isset($_SESSION['str']) && $_SESSION['str'] == $str) {
+        $i = intval($_POST['start']);
+        while($i < intval($_POST['start']) + 100 && $i < count($_SESSION['tab'])) {
+            $mess->tab[] = $_SESSION['tab'][$i];
+            $i++;
+        }
+	$mess->is_more = ($i < count($_SESSION['tab']) - 1) ? 1 : 0;  
+	echo json_encode($mess);
+    	return;
+    }
+ 
+    $_SESSION['str'] = $str;
+
+    $LOGIN = "js406351";
+    $PASS = "exks170899";
     $conn = oci_connect($LOGIN,$PASS);
 
      if (!$conn) {
@@ -54,5 +86,14 @@
     while(($row = oci_fetch_array($stmt, OCI_NUM))) {
 	$tab[] = $row;
     }
-    echo json_encode($tab);
+   
+    $_SESSION['tab'] = $tab;
+
+    $i = 0;
+    while($i < 100 && $i < sizeof($tab)) {
+	$mess->tab[] = $tab[$i];
+	$i++;
+    }
+    $mess->is_more = ($i < sizeof($tab) - 1) ? 1 : 0;
+    echo json_encode($mess);
 ?>

@@ -1,9 +1,5 @@
 function setParams() {
-    lowRow = -1;
-    highRow = -1;
-    maxRows = 8;
     HTMLTabElems = [];
-    newTable = true;
     rowSpanTab = JSON.parse(JSON.stringify(tab));
     rows = tab.length;
     cols = tab[0].length;
@@ -63,7 +59,7 @@ function HTMLTabElemsPrepare () {
 
 function display() {
     let tabi = document.createElement("table");
-    for(let i=lowRow; i<=highRow; i++) {
+    for(let i=0; i < HTMLTabElems.length; i++) {
      	let bod = HTMLTabElems[i].childNodes[0].cloneNode(true);
 	tabi.appendChild(bod);
     }
@@ -73,42 +69,16 @@ function display() {
 
 //handles buttons
 function disButs() {
-    r.disabled = (highRow === HTMLTabElems.length-1);
-    l.disabled = (lowRow === 0);
-} 
-
-function changeView(a) {
-    let count = 0;
-    let i = 1;
-    if(a) {
-	do {
-	    count += parseInt(HTMLTabElems[highRow+i].childNodes[0].childNodes[0].childNodes[0].getAttribute("rowspan"));
-	    i++;
-	} while(count < 8 && HTMLTabElems.length > highRow+i);
-	lowRow = highRow+1;
-	highRow += i-1;
-	if(count > 8 && i > 2) {
-	    highRow--;
-	}
-    } else {
-	 do {
-            count += parseInt(HTMLTabElems[lowRow-i].childNodes[0].childNodes[0].childNodes[0].getAttribute("rowspan"));
-	    i++; 
-        } while(count < 8 && lowRow-i > -1);
-	highRow = lowRow-1;
-	lowRow -= (i-1);
-	if(count > 8 && i > 2) {
-	    lowRow++;
-	}
-    }
-    disButs();
-    display();
+    r.disabled = (is_more == 0);
+    l.disabled = (start == 0);
 }
 
 l.onclick = () => {
-    changeView(false);
-}
+    start -= 100;
+    func(0);
+};
 
 r.onclick = () => {
-    changeView(true);
-}
+    start += 100;
+    func(0);
+};

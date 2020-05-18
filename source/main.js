@@ -4,21 +4,23 @@ const but = document.getElementById("but");
 const l = document.getElementById("L");
 const r = document.getElementById("R");
 
-var tab;
-var lowRow;
-var highRow;
-var maxRows;
-var HTMLTabElems;
-var newTable;
-var rowSpanTab;
-var rows;
-var cols;
-var firstInSpan;
-var prevColSpan;
+var tab; // dane do wyświetlenia
+var start = 0; // indeks pierwszego wiersz z całego wyniku
+var is_more; // czy jest coś o większym indeksie
+var HTMLTabElems; // tablica elementów tbody do wyświetlenia
+var rowSpanTab; // talbica wartośći rowspan
+var rows; // ilość wierszy do wyświetlenia
+var cols; // ilość kolumn do wyświetlenia
+var firstInSpan; // pomocniecze do tworzenia HTMLTabElems
+var prevColSpan; // -||-
+var word = "";
 
 but.disabled = true;
-but.onclick = func;
+but.onclick = () => {
+    func(1);         
+};
 inpt.value = "";
+
 inpt.oninput = () => {
     if(inpt.value !== ""){
 	but.disabled = false;
@@ -26,9 +28,6 @@ inpt.oninput = () => {
 	but.disabled = true;
     }
 };
-
-l.disabled = true;
-r.disabled = true;
 
 l.disabled = true;
 r.disabled = true;
@@ -43,39 +42,47 @@ function check(asci) {
 	);    
 }
 
-function eror(str) {
+function tell(str) {
     sample.innerText = str;
 } 
 
-function func() {
-    for(var i=0;i<inpt.value.length;i++){
-		if(!check(inpt.value.charCodeAt(i))){
-			error("Zle slowo");
-			return;
-		}
+function func(new_tab) {
+    if(new_tab) {
+	word = inpt.value;
+    }
+    for(var i=0; i < word.length ;i++){
+	if(!check(inpt.value.charCodeAt(i))){
+	    tell("Zle slowo");
+	    return;
 	}
+    }
     $.ajax({
        	url: 'go.php',
        	type: 'post',
-		data: { str : inpt.value },
+		data: { str : word, start : start},
 		errror: function() {
-	    	error("polaczenie z serwerem zawiodlo");
+	    		tell("polaczenie z serwerem zawiodlo");
 		},
-       	success: function(data) {    
+       	success: function(data) {  
 			var obj;
-			if(data === "Arraynull") return;
 			try {
 				obj = JSON.parse(data);
 			} catch(e) {
-				sample.innerText = "ERROR while parsing";	
+				tell(data);
 				return;
 			}
-			if(obj === null) return;
-			tab = obj;
+			tab = obj.tab;
+			if(tab.length == 0) {
+                                tell("Pusty wynik");
+				return;
+			}
+			is_more = parseInt(obj.is_more);
+			start = parseInt(obj.start);
 			setParams();
 			rowSpanTabPrepare();
 			HTMLTabElemsPrepare();
-			changeView(true);
+			disButs();
+			display();
 		}
 	});
 }
