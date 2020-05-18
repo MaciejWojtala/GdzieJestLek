@@ -6,7 +6,7 @@
 \usepackage{xcolor}
 \selectlanguage{polish}
 \author{Jakub Skrajny, Dawid Herman, Maciej Wojtala, Mateusz Błajda}
-\title{Analiza wymagań I- "GdzieJestLek"}
+\title{Analiza wymagań I/II- "GdzieJestLek"}
 \begin{document}
 \maketitle
 \section{Wprowadzenie}
@@ -14,7 +14,7 @@
 \section{Słownik}
 \begin{itemize}
 \item OBJKEY - para złożona z wartości typu 'Nazwa' i typu 'Substancja czynna'.
-\item OBJ - zbiór wierszy z bazy danych, których pola 'Nazwa' i 'Substancja czynna' tworzą identyczny OBJKEY.
+\item OBJ - zbiór wierszy, których pola 'Nazwa' i 'Substancja czynna' tworzą identyczny OBJKEY.
 \item poprawne słowo - ciąg znaków, których dziesiętny kod ASCII należy do przedziału [32-122] oraz nie należy do żadnego z następujących przedziałów [33-39], [59], [63-64], [91-96].
 \end{itemize}
 Uwagi:\newline
@@ -62,13 +62,13 @@ Znaki ';', (procent) oraz (Mikro) zostaną zamienione odpowiednio na '.', 'p', '
 \subsection{Wyszukiwanie}
 Wyszukiwanie rozpoczyna się po wciśnięciu przycisku SBT.
 Aplikacja wyszukuje tekst będący zawartością IN (później nazywany TEXT) w momencie kliknięcia. \newline
-Aplikacja nie gwarantuje poprawnego wyszukania słowa innego niż 'poprawne słowo' (wyjaśnienie w słowniku).\newline
+Aplikacja nie wyszukuje słowa innego niż 'poprawne słowo' (wyjaśnienie w słowniku).\newline
 Wynikiem wyszukiwania są wszystkie OBJ (wyjaśnienie w słowniku), które zawierają taką komórkę, że TEXT jest infiksem zawartości komórki.
 \subsection{Wyświetlanie}
 Po zakończeniu wyszukiwania, wynik wyświetli się w następujący sposób. \newline
 Rekordy znajdujące się w wyniku zostaną wyświetlane w postaci tabeli. Kolumny wyświetlonej tabeli będą identyczne jak te w bazie danych. Kolejność wyświetlanych wierszy będzie leksykograficznie rosnąca przy czym porządkować będziemy po kolejnych wartościach kolumn od lewej do prawej. \newline
-Wyniki wyszukiwania będą stronicowane, aby przyspieszyć czas przedstawiania ich w przeglądarce. W pol OUT zmieści się maksymalnie 8 wierszy. Na kolejnych stronach, które będzie można przeglądać przy pomocy przycisków L i R, pokazywane będą grupy wierszy maksymalnego mieszczącego się rozmiaru. Grupy wierszy OBJ są całością, tzn. każda taka grupa znajduje się na jednej stronie. Stąd wyjątek: jeżeli OBJ zajmuje więcej niż maksymalna wielkość OUT, to i tak jest wyświetlany na jednej stronie, ale nic poza nim.\newline 
-W ramach jednego OBJ będzie dokonane złączenie pewnych komórek w jedną. Efekt złączenia w aplikacji będzie taki sam jak efekt złączenia komórek w skutek następującego procesu:\newline
+Wyniki wyszukiwania będą stronicowane, aby przyspieszyć czas przedstawiania ich w przeglądarce. W pol OUT zmieści się maksymalnie 100 wierszy. Na kolejnych stronach, które będzie można przeglądać przy pomocy przycisków L i R, pokazywane będzie 100(lub tyle co jeszcze pozostało) wierszy mniejsze/większe leksykograficznie.\newline 
+W ramach jednego OBJ z wierszy zawartych w danej porcji do wyświetlenia, będzie dokonane złączenie pewnych komórek w jedną. Efekt złączenia w aplikacji będzie taki sam jak efekt złączenia komórek w skutek następującego procesu:\newline
 1. Zaczynamy od kolumny nr 3,bo wartości w kolumnach 1 oraz 2 są takie same dla każdego rekordu w OBJ \newline
 2. W aktualnej kolumnie łączymy komórki o tych samych wartościach, jeśli komórki z kolumny o numerze niższym o 1 już zostały połączone. Powtarzamy ten krok dla kolejnych kolumn.
 \newline
@@ -77,7 +77,6 @@ W ramach jednego OBJ będzie dokonane złączenie pewnych komórek w jedną. Efe
 Aplikacja może działać poprawnie w dowolnej przeglądarce internetowej. Zapewniamy jej całkowicie poprawne działanie w następujących przeglądarkach:
 \begin{itemize}
 \item Google Chrome od wersji 29.0
-\item Internet Explorer od wersji 11.0
 \item Mozilla Firefoz od wersji 28.0
 \item Safari od wersji 9.0
 \item Opera od wersji 17.0

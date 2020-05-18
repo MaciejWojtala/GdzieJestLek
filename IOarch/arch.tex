@@ -48,29 +48,30 @@ Wykonywane są następujące funkcje:
 \item setParams
 \item rowSpanTabPrepare
 \item HTMLTabElemsPrepare
-\item changeView
+\item disButs
+\item display
 \end{itemize}
 setParams - ustala zmienne globalne na odpowiednie wartości wyjściowe \\ \\
 rowSpanTabPrepare - tworzy tabele rowSpanTab, na podstawie której do komórek tabeli będzie przyporządkowana wartość rowspan(sposób łączenia komórek został opisany w wymaganiach funkcjonalnych) \\ \\
 HTMLTabElemsPrepare - tworzy tablicę tabel HTML(HTMLTabElems), każdy element tablicy jest elementem OBJ(definicja w wymaganiach funkcjonalnych), komórki tych tabel mają ustaloną wartość rowspan na podstawie rowSpanTabPrepare \\ \\
-changeView - wylicza jaką część z HTMLTabElems należy wyświetlić oraz wywołuje funkcje disButs oraz display.\\
 disButs - zażądza atrybutem disabled przycisków L oraz R,
 przycisk L / R ma ustawiony atrybut disabled wtedy i tylko wtedy, gdy nie ma już wyników mniejszych/większych leksykograficznie od aktualnie wyświetlonych wyników. \\ \\
-display - tworzy nową tabelę HTML z odpowiednich elementów HTMLTabElems oraz ją wyświetla \\
-Następnie klient może za pomocą L oraz R zmieniać zmieniać 
-wyświetlaną część wyniku. \\
-Wciśnięcie L lub R powoduje wywołanie funkcji changeView z odpowiednim parametrem wskazującym na to, który przycisk został wciśnięty.
+display - tworzy nową tabelę HTML z elementów HTMLTabElems oraz ją wyświetla \\
 \section{Klient-serwer}
-Za pomocą przycisku SBT (opisanego w dokumencie pt.',,Analiza wymagań I- 'GdzieJestLek' '') klient wysyła żądanie do serwera.
+Za pomocą przycisków SBT, L, R (opisanych w dokumencie pt."Analiza wymagań I - 'GdzieJestLek'") klient wysyła żądanie do serwera.\\
+Działanie po wciśnięciu SBT: \
 Serwer inicjuje wyszukiwanie w bazie danych odpowiednich rekordów, które są zależne od wyrazu wpisanego w pole IN.
-
+Zwraca maksymalnie pierwsze 100 rekordów.\\
+Działanie po wciśnięciu L / R: \\
+Serwer na podstawie danych żądania zwraca maksymalnie 100 rekordów mniejszych/większych leksykograficznie z danych przetrzymanych przez serwer jako zmienna sesji.
 \subsection{Wysłanie żądanie}
-Wciśnięcie SBT powoduje wywołanie funkcji func().
-Funkcja func() sprawdza, czy dany wyraz jest poprawny(definicja z dokumentu jak wyżej). W sprawdznaniu pomaga funkcja check(), która sprawdza pojedynczy znak. Jeśli wyraz nie jest poprawny, to wyświetlany zostaje stosowny komunikat za pomocą funkcji error(). Jeśli wyraz jest poprawny, to wysyłane jest żądanie do serwera za pomocą funkcji jQuery.ajax(). Żądanie jest typu post, za wykonanie tego żądania odpowiada skrypt go.php, serwer otrzymuje jako daną zawartość IN. Jeśli serwer nie odbierze poprawnie danych, to zwróci znak procent.
-
+Wciśnięcie SBT powoduje wywołanie func(1).
+Wciścnięcie L / R powoduje wywołanie func(0).
+Parametr wskazuje na to, czy należy zaaktualizować wyszukiwany wyraz. 1 - wyszukanie po aktualnym wyrazie w polu IN, 0 - zmiana wyświetlanej częście wyniku. \\
+Funkcja func sprawdza, czy dany wyraz jest poprawny(definicja z dokumentu jak wyżej). W sprawdznaniu pomaga funkcja check(), która sprawdza pojedynczy znak. Jeśli wyraz nie jest poprawny, to wyświetlany zostaje stosowny komunikat za pomocą funkcji tell(). Jeśli wyraz jest poprawny, to wysyłane jest żądanie do serwera za pomocą funkcji jQuery.ajax(). Żądanie jest typu post, za wykonanie tego żądania odpowiada skrypt go.php, serwer otrzymuje jako daną zawartość IN.
 \subsection{Odpowiedź na żądanie}
 Jeśli żądanie zakończy się sukcesem, serwer zwraca odpowiedź jako napis. Jest to JSON opisujący dwuwymiarową tablicę. Ta tablica zawiera rekordy zwrócone przez bazę danych w wyniku wyszukiwania.
-Jeśli żądanie nie zakończy się sukcesem, zostanie wyświetlony stosowny komunikat za pomocą funkcji error().
+Jeśli żądanie nie zakończy się sukcesem, zostanie wyświetlony stosowny komunikat za pomocą funkcji tell().
 
 \section{Struktura bazy danych}
 Baza danych jest zrealizowana w systemie Oracle (Oracle Database).
