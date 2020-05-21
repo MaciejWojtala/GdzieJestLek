@@ -1,9 +1,3 @@
-const sample = document.querySelector("sample");
-const inpt = document.getElementById("in");
-const but = document.getElementById("but");
-const l = document.getElementById("L");
-const r = document.getElementById("R");
-
 var tab; // dane do wyświetlenia
 var start = 0; // indeks pierwszego wiersz z całego wyniku
 var is_more; // czy jest coś o większym indeksie
@@ -15,22 +9,55 @@ var firstInSpan; // pomocniecze do tworzenia HTMLTabElems
 var prevColSpan; // -||-
 var word = "";
 
-but.disabled = true;
-but.onclick = () => {
-    func(1);         
+
+
+
+l.disabled = true;
+r.disabled = true;
+
+
+var getParams = (url) => {
+	var params = {};
+	var parser = document.createElement('a');
+	parser.href = url;
+	var query = parser.search.substring(1);
+	var vars = query.split('&');
+	for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split('=');
+		params[pair[0]] = decodeURIComponent(pair[1]);
+	}
+	return params;
 };
-inpt.value = "";
+var params = getParams(window.location.href);
+
+
+if(params.word !== undefined) {
+	word = params.word;
+	inpt.value = word;
+}	
+if(params.start !== undefined)
+	start = parseInt(params.start);
+if(start < 0) {
+	start = 0;
+}
+if(word !== "")
+	func(); 
+
+but.disabled = (word === "");
+
+but.onclick = () => {
+	word = inpt.value;
+    window.location.href = `./main.html?word=${word}&start=0`; 
+};
 
 inpt.oninput = () => {
+	
     if(inpt.value !== ""){
 	but.disabled = false;
     } else {
 	but.disabled = true;
     }
 };
-
-l.disabled = true;
-r.disabled = true;
 
 function check(asci) {
     return (
@@ -46,24 +73,25 @@ function tell(str) {
     sample.innerText = str;
 } 
 
-function func(new_tab) {
-    if(new_tab) {
-	word = inpt.value;
-    }
+function func() {
     for(var i=0; i < word.length ;i++){
-	if(!check(inpt.value.charCodeAt(i))){
-	    tell("Zle slowo");
-	    return;
+		if(!check(word.charCodeAt(i))){
+			tell("Zle slowo");
+			return;
+		}
 	}
-    }
+	if(start < 0){
+		tell("Zly start");
+		return;
+	}
     $.ajax({
        	url: 'go.php',
        	type: 'post',
 		data: { str : word, start : start},
 		errror: function() {
-	    		tell("polaczenie z serwerem zawiodlo");
+			tell("polaczenie z serwerem zawiodlo");
 		},
-       	success: function(data) {  
+	    success: function(data) {  
 			var obj;
 			try {
 				obj = JSON.parse(data);
@@ -73,7 +101,7 @@ function func(new_tab) {
 			}
 			tab = obj.tab;
 			if(tab.length == 0) {
-                                tell("Pusty wynik");
+				tell("Pusty wynik");
 				return;
 			}
 			is_more = parseInt(obj.is_more);
@@ -84,5 +112,5 @@ function func(new_tab) {
 			disButs();
 			display();
 		}
-	});
+});
 }

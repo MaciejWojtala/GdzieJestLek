@@ -1,3 +1,9 @@
+const sample = document.querySelector("sample");
+const inpt = document.getElementById("in");
+const but = document.getElementById("but");
+const l = document.getElementById("L");
+const r = document.getElementById("R");
+
 function setParams() {
     HTMLTabElems = [];
     rowSpanTab = JSON.parse(JSON.stringify(tab));
@@ -75,10 +81,10 @@ function disButs() {
 
 l.onclick = () => {
     start -= 100;
-    func(0);
+    window.location.href = `./main.html?word=${word}&start=${start}`;
 };
 
 r.onclick = () => {
     start += 100;
-    func(0);
+    window.location.href = `./main.html?word=${word}&start=${start}`;
 };
