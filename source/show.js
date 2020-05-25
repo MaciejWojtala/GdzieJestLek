@@ -56,7 +56,8 @@ function HTMLTabElemsPrepare () {
             if(rowSpanTab[i][col] > 0) {
                 let cell = row.insertCell();
                 cell.rowSpan = rowSpanTab[i][col];
-                cell.innerText = ""+tab[i][j];
+                cell.innerHTML = `<a href=./main.html?word=${tab[i][j]}&start=0>${tab[i][j]}</a>`
+                // cell.innerText = ""+tab[i][j];
             }
         }
         currColSpan--;
